@@ -2,11 +2,9 @@ import type React from "react";
 import type { Metadata } from "next";
 import "./globals.css";
 import { ReactQueryProvider } from "@/lib/react-query";
-// import { ThemeProvider } from "@/components/theme-provider"
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
-
-// const inter = Inter({ subsets: ["latin"] });
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,9 +32,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ReactQueryProvider>
-          {/* <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange> */}
-          {children}
-          {/* </ThemeProvider> */}
+          <Suspense>{children}</Suspense>
         </ReactQueryProvider>
         <Toaster />
       </body>
