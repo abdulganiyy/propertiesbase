@@ -1,0 +1,13 @@
+export const REQUIRED = "Required";
+export const INVALID_EMAIL = "Invalid email";
+export const INVALID_PHONE = "Invalid phone number";
+export const INVALID_ZIP = "Invalid zip code";
+export const INVALID_DATE = "Invalid date";
+export const INVALID_NUMBER = "Invalid number";
+export const INVALID_URL = "Invalid URL";
+export const INVALID_PASSWORD = "Please enter a valid password";
+export const INVALID_CONFIRM_PASSWORD = "Passwords do not match";
+export const SELECT_OPTION = "Please select an option";
+export const MUST_AGREE = "You must agree to continue";
+export const START_TIME_BEFORE_END_TIME = "Start time must be before end time";
+export const END_TIME_AFTER_START_TIME = "End time must be after start time";
