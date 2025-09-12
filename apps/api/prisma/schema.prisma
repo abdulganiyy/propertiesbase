@@ -27,6 +27,8 @@ model User {
   properties   Property[] @relation("PropertyOwner")
   favorites    Favorite[]
   viewings     Viewing[]
+  reviews   Review[]
+  ratings   Rating[]
   views        UniquePropertyView[] 
   sentMessages Message[]  @relation("Sender")
   chatsAsOwner Chat[]     @relation("Owner")
@@ -87,6 +89,8 @@ model Property {
   images       PropertyImage[]
   favorites    Favorite[]
   viewings    Viewing[]
+  reviews   Review[]
+  ratings   Rating[]
   views       UniquePropertyView[] 
   chats        Chat[]
   isDeleted      Boolean   @default(false)
@@ -180,6 +184,28 @@ model UniquePropertyView {
  @@unique([propertyId, userId])
  @@unique([propertyId, ipAddress])
 
+}
+
+model Review {
+  id        String    @id @default(uuid())
+  content   String
+  property   Property   @relation(fields: [propertyId], references: [id])
+  propertyId String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime  @default(now())
+}
+
+model Rating {
+  id        String    @id @default(uuid())
+  value     Int       // 1–5 scale
+  property   Property   @relation(fields: [propertyId], references: [id])
+  propertyId String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime  @default(now())
+
+  @@unique([propertyId, userId]) // Prevent duplicate ratings by the same user
 }
 
 enum ViewingStatus {

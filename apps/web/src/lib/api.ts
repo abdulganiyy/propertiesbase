@@ -583,7 +583,7 @@ fetchChats:    async function () {
     
 },
 
-  getRecentActivities: async (): Promise<any> => {
+getRecentActivities: async (): Promise<any> => {
 
     const response = await fetch(`${API_BASE_URL}/user/activities`,{
       headers:{
@@ -599,7 +599,7 @@ fetchChats:    async function () {
     return response.json()
   },
 
-  getUsers: async (filters: any = {}): Promise<any> => {
+getUsers: async (filters: any = {}): Promise<any> => {
     const searchParams = new URLSearchParams()
 
     Object.entries(filters).forEach(([key, value]) => {
@@ -634,6 +634,42 @@ deleteProperty: async function (id: string) {
     throw new Error("Failed to delete property");
   }
   return res.json();
-}
+},
+
+fetchReviews : async (propertyId: string) => {
+  const { data } = await axios.get(`${API_BASE_URL}/property/${propertyId}/reviews`,{
+      headers:{
+        authorization:`Bearer ${Cookies.get('token')}`
+      }
+    });
+  return data;
+},
+
+addReview : async (propertyId: string, content: string) => {
+  const { data } = await axios.post(`${API_BASE_URL}/property/${propertyId}/reviews`, { content },{
+      headers:{
+        authorization:`Bearer ${Cookies.get('token')}`
+      }
+    });
+  return data;
+},
+
+fetchAverageRating : async (propertyId: string) => {
+  const { data } = await axios.get(`${API_BASE_URL}/property/${propertyId}/ratings/average`,{
+      headers:{
+        authorization:`Bearer ${Cookies.get('token')}`
+      }
+    });
+  return data;
+},
+
+addRating : async (propertyId: string, value: number) => {
+  const { data } = await axios.post(`${API_BASE_URL}/property/${propertyId}/ratings`, { value },{
+      headers:{
+        authorization:`Bearer ${Cookies.get('token')}`
+      }
+    });
+  return data;
+},
 
 }

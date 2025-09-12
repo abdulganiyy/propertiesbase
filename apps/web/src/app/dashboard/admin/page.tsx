@@ -615,7 +615,7 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {properties?.properties?.length &&
+                    {properties?.properties?.length != 0 &&
                       properties?.properties?.map((property: any) => (
                         <tr
                           key={property.id}

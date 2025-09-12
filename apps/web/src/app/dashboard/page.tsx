@@ -429,6 +429,17 @@ export default function UserDashboard() {
                       <h4 className="font-semibold">
                         {viewing?.property?.title}
                       </h4>
+                      <Badge
+                        variant={
+                          viewing.status === "AVAILABLE"
+                            ? "default"
+                            : viewing.status === "PENDING"
+                              ? "secondary"
+                              : "destructive"
+                        }
+                      >
+                        {viewing.status}
+                      </Badge>
                       <Badge variant="outline">
                         {formatDateTime(viewing?.scheduledAt).time}
                       </Badge>

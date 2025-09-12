@@ -138,7 +138,7 @@ export class PropertyService {
 
       const [data, total] = await Promise.all([
       this.prisma.property.findMany({
-        include:{owner:true,images:true},
+        include:{owner:true,images:true,views:true},
         where,
         skip,
         take: Number(limit),
@@ -225,7 +225,9 @@ export class PropertyService {
   findOne(id: string) {
     return this.prisma.property.findFirst({
       where:{id},
-      include:{owner:true,images:true}})
+      include:{owner:true,images:true,ratings:true,reviews:{include:{
+        user:true
+      }}}})
     
   }
 

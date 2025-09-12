@@ -33,8 +33,8 @@ import { useUser, useUserStats } from "@/hooks/use-user";
 import { PropertyFormDialog } from "@/app/dashboard/_components/property-form-dialog";
 import Link from "next/link";
 import { useSubmitProperty } from "@/hooks/use-properties";
-import { formatDateTime } from "@/lib/utils";
 import { DeletePropertyModal } from "../_components/delete-property-modal";
+import { formatDateTime, getPriceDisplay } from "@/lib/utils";
 
 export default function OwnerDashboard() {
   const { data: user, isLoading, error } = useUser();
@@ -696,7 +696,7 @@ export default function OwnerDashboard() {
                 <div className="space-y-4">
                   {ownerProperties?.properties
                     .slice(0, 5)
-                    .map((property, index) => (
+                    .map((property: any, index) => (
                       <div
                         key={property.id}
                         className="flex items-center justify-between p-3 border rounded-lg"
@@ -710,15 +710,17 @@ export default function OwnerDashboard() {
                           <div>
                             <p className="font-medium">{property.title}</p>
                             <p className="text-sm text-gray-500">
-                              {Math.floor(Math.random() * 50) + 10} views
+                              {property?.views?.length} views
                             </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-medium">${property.price}</p>
-                          <p className="text-sm text-gray-500">
-                            {Math.floor(Math.random() * 10) + 1} inquiries
+                          <p className="font-medium">
+                            {getPriceDisplay(property).price}
                           </p>
+                          {/* <p className="text-sm text-gray-500">
+                            {Math.floor(Math.random() * 10) + 1} inquiries
+                          </p> */}
                         </div>
                       </div>
                     ))}

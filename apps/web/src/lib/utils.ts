@@ -46,6 +46,43 @@ export function timeAgo(dateInput?: string | Date | null) {
   return rtf.format(-Math.floor(diff / 86400), "day");
 }
 
+export const getPriceDisplay = (property: any) => {
+  switch (property?.listingType) {
+    case "sale":
+      return {
+        price: `${property?.currency || "₦"}${property?.salePrice?.toLocaleString() || property?.price?.toLocaleString()}`,
+        period: "",
+        subtitle: "Sale Price",
+      };
+    case "rent":
+      if (property?.rentPeriod === "yearly" && property?.yearlyRent) {
+        return {
+          price: `${property?.currency || "₦"}${property?.yearlyRent?.toLocaleString()}`,
+          period: "/year",
+          subtitle: "Annual Rent",
+        };
+      }
+      return {
+        price: `${property?.currency || "₦"}${property?.monthlyRent?.toLocaleString() || property?.price?.toLocaleString()}`,
+        period: "/month",
+        subtitle: "Monthly Rent",
+      };
+    case "lease":
+      return {
+        price: `${property?.currency || "₦"}${property?.leaseAmount?.toLocaleString() || property?.price?.toLocaleString()}`,
+        period: property?.leaseDuration ? `/${property?.leaseDuration}` : "",
+        subtitle: "Lease Amount",
+      };
+    default:
+      return {
+        price: `${property?.currency || "₦"}${property?.price?.toLocaleString() || "300"}`,
+        // price: `$333`,
+
+        period: "/month",
+        subtitle: "Price",
+      };
+  }
+};
 
 // export function timeAgo(dateString: string) {
 //   const date = new Date(dateString);

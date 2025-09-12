@@ -72,6 +72,10 @@ import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
 
+import Reviews from "@/components/shared/review";
+import Rating from "@/components/shared/rating";
+import { formatDateTime, getPriceDisplay } from "@/lib/utils";
+
 const amenityIcons = {
   wifi: Wifi,
   parking: Car,
@@ -88,44 +92,6 @@ interface PropertyDetailPageProps {
     id: string;
   };
 }
-
-const getPriceDisplay = (property: any) => {
-  switch (property?.listingType) {
-    case "sale":
-      return {
-        price: `${property?.currency || "₦"}${property?.salePrice?.toLocaleString() || property?.price?.toLocaleString()}`,
-        period: "",
-        subtitle: "Sale Price",
-      };
-    case "rent":
-      if (property?.rentPeriod === "yearly" && property?.yearlyRent) {
-        return {
-          price: `${property?.currency || "₦"}${property?.yearlyRent?.toLocaleString()}`,
-          period: "/year",
-          subtitle: "Annual Rent",
-        };
-      }
-      return {
-        price: `${property?.currency || "₦"}${property?.monthlyRent?.toLocaleString() || property?.price?.toLocaleString()}`,
-        period: "/month",
-        subtitle: "Monthly Rent",
-      };
-    case "lease":
-      return {
-        price: `${property?.currency || "₦"}${property?.leaseAmount?.toLocaleString() || property?.price?.toLocaleString()}`,
-        period: property?.leaseDuration ? `/${property?.leaseDuration}` : "",
-        subtitle: "Lease Amount",
-      };
-    default:
-      return {
-        price: `${property?.currency || "₦"}${property?.price?.toLocaleString() || "300"}`,
-        // price: `$333`,
-
-        period: "/month",
-        subtitle: "Price",
-      };
-  }
-};
 
 function formatLocation({
   address,
@@ -147,7 +113,7 @@ export default function PropertyDetailPage({
 }: PropertyDetailPageProps) {
   // const propertyId = params.id;
   const { id: propertyId } = useParams();
-  console.log(propertyId);
+  // console.log(propertyId);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showAllImages, setShowAllImages] = useState(false);
@@ -408,11 +374,13 @@ export default function PropertyDetailPage({
           <div className="flex items-start justify-between mb-4">
             <div>
               <h1 className="text-3xl font-bold mb-2">{property.title}</h1>
-              <div className="flex items-center gap-4 text-gray-600">
+              <div className="md:flex items-center gap-4 text-gray-600">
                 <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="font-medium">{property.rating || 5}</span>
-                  <span>({property.reviews || 40} reviews)</span>
+                  <Rating propertyId={property.id} />
+                  {/* <Reviews propertyId={property.id} /> */}
+                  {/* <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" /> */}
+                  {/* <span className="font-medium">{property.rating || 5}</span> */}
+                  {/* <span>({property.reviews || 40} reviews)</span> */}
                 </div>
                 <div className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
@@ -572,56 +540,58 @@ export default function PropertyDetailPage({
             </Card>
 
             {/* Reviews */}
-            {property.propertyReviews &&
-              property.propertyReviews.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                      {property.rating} •{" "}
-                      {property.propertyReviews.length || 40} Reviews
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      {property.propertyReviews.map((review: any) => (
-                        <div key={review.id} className="flex gap-4">
-                          <Avatar>
-                            <AvatarImage
-                              src={review.avatar || "/placeholder.svg"}
-                            />
-                            <AvatarFallback>
-                              {review.author
-                                .split(" ")
-                                .map((n: any) => n[0])
-                                .join("")}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium">
-                                {review.author}
-                              </span>
-                              <div className="flex">
-                                {[...Array(review.rating)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className="h-3 w-3 fill-yellow-400 text-yellow-400"
-                                  />
-                                ))}
-                              </div>
-                              <span className="text-sm text-gray-500">
-                                {review.date}
-                              </span>
-                            </div>
-                            <p className="text-gray-600">{review.comment}</p>
+            {user && <Reviews propertyId={property.id} />}
+            {property.reviews && property.reviews.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    {/* <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" /> */}
+                    {/* {property.ratings.length} •  */}
+                    {property.reviews.length || 4} Review(s)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {property.reviews.map((review: any) => (
+                      <div key={review.id} className="flex gap-4">
+                        <Avatar>
+                          <AvatarImage
+                            src={review?.user?.imageUrl || "/placeholder.svg"}
+                          />
+                          <AvatarFallback>
+                            {`${review?.user?.firstname} 
+                              ${review?.user?.lastname}`
+
+                              .split(" ")
+                              .map((n: any) => n[0])
+                              .join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-medium">
+                              {review?.user?.firstname} {review?.user?.lastname}
+                            </span>
+                            {/* <div className="flex">
+                              {[...Array(review.rating)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className="h-3 w-3 fill-yellow-400 text-yellow-400"
+                                />
+                              ))}
+                            </div> */}
+                            <span className="text-sm text-gray-500">
+                              {formatDateTime(property?.created_at).date}
+                            </span>
                           </div>
+                          <p className="text-gray-600">{review.content}</p>
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Sidebar */}
@@ -635,10 +605,11 @@ export default function PropertyDetailPage({
                 <div className="flex items-center gap-4 mb-4">
                   <Avatar className="h-16 w-16">
                     <AvatarImage
-                      src={property.owner.avatar || "/placeholder.svg"}
+                      src={property.owner.imageUrl || "/placeholder.svg"}
                     />
                     <AvatarFallback>
-                      {property.owner.firstname
+                      {`${property.owner.firstname} 
+                              ${property.owner.lastname}`
                         .split(" ")
                         .map((n: any) => n[0])
                         .join("")}
@@ -647,19 +618,21 @@ export default function PropertyDetailPage({
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="font-semibold text-lg">
-                        {property.owner.name}
+                        {property.owner.firstname +
+                          " " +
+                          property.owner.lastname}
                       </h3>
-                      {property.owner.verified && (
+                      {property.owner.isOwnerVerified && (
                         <CheckCircle className="h-4 w-4 text-green-500" />
                       )}
                     </div>
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                       <span className="font-medium">
-                        {property.owner.rating || 50}
+                        {property.ratings.length || 0}
                       </span>
                       <span className="text-gray-500">
-                        ({property.owner.reviewCount || 40} reviews)
+                        ({property.reviews.length || 0} reviews)
                       </span>
                     </div>
                   </div>
@@ -680,15 +653,16 @@ export default function PropertyDetailPage({
                   <div className="flex justify-between">
                     <span className="text-gray-500">Joined:</span>
                     <span className="font-medium">
-                      {property.owner.joinedDate || "July 28, 2024"}
+                      {formatDateTime(property?.owner.created_at).date ||
+                        "July 28, 2024"}
                     </span>
                   </div>
                 </div>
-                {property.owner.bio && (
+                {/* {property.owner.bio && (
                   <p className="text-gray-600 text-sm mb-4">
                     {property.owner.bio}
                   </p>
-                )}
+                )} */}
                 <div className="flex gap-2">
                   <Button className="flex-1" onClick={handleStartChat}>
                     <MessageCircle className="h-4 w-4 mr-2" />

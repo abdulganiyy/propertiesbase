@@ -59,6 +59,9 @@ export function ScheduleViewingModal({
     }
 
     await mutation.mutateAsync({ ...data, propertyId });
+
+    toast("Your booking has been added to owner's calendar");
+    setOpen(false);
   };
 
   return (
