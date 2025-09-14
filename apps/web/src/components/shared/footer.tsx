@@ -237,11 +237,11 @@ export function Footer({ variant = "default" }: FooterProps) {
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm text-gray-300">
                 <Mail className="h-4 w-4 text-white" />
-                <span>support@propertiesbase.com</span>
+                <span>info@propertiesbase.com</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-300">
                 <Phone className="h-4 w-4 text-white" />
-                <span>+234-7045-23-7590</span>
+                <span>+234-8178-43-5354</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-300">
                 <MapPin className="h-4 w-4 text-white" />

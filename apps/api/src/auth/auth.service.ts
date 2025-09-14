@@ -76,21 +76,13 @@ async signUpPropertyOwner(data:any):  Promise<{message:string}> {
 
     const passwordHash = await hash(data.password,10)
 
-    await this.prisma.user.create({data:{...data,password:passwordHash,role:"owner"}})
+    const newUser = await this.prisma.user.create({data:{...data,password:passwordHash,role:"owner"}})
 
- 
-    // const payload = { id: newUser.id,email:newUser.email, firstname: newUser.firstname,role:'user'};
+     const payload = { id: newUser.id,email:newUser.email, firstname: newUser.firstname,role:'user'};
 
-    // await this.emailService.sendEmail(newUser.email,
-    //   'Welcome to Our App!',
-    //   'signup',
-    //   {
-    //     name: newUser.firstname,
-    //     appName:process.env.APPNAME
-    //   })
+    const  access_token = await this.jwtService.signAsync(payload,{expiresIn:"360d"})
 
-    // const  access_token = await this.jwtService.signAsync(payload)
-
+    await this.emailService.sendVerificationEmail(newUser.email,newUser.firstname as string,access_token)
 
     return {
       message:"Signup is successful, check email for verification link"

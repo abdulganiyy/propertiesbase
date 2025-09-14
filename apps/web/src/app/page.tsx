@@ -195,13 +195,13 @@ export default function LandingPage() {
                     <div className="flex gap-2">
                       <Input
                         placeholder="Min Price"
-                        className="h-12 w-32"
+                        className="md:h-12 md:w-32"
                         value={minPrice}
                         onChange={(e) => setMinPrice(e.target.value)}
                       />
                       <Input
                         placeholder="Max Price"
-                        className="h-12 w-32"
+                        className="md:h-12 md:w-32"
                         value={maxPrice}
                         onChange={(e) => setMaxPrice(e.target.value)}
                       />

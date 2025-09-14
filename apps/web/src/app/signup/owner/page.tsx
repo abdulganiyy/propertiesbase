@@ -52,6 +52,7 @@ import { toast } from "sonner";
 
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { delay } from "@/lib/utils";
 
 const ownerOnboardingSchema = yup.object({
   // Personal Information
@@ -163,9 +164,9 @@ const platformFeatures = [
     title: "Rental Properties",
     description: "Monthly and yearly rental listings with tenant screening",
     features: [
-      "Tenant background checks",
-      "Automated rent collection",
-      "Lease management",
+      // "Tenant background checks",
+      // "Automated rent collection",
+      // "Lease management",
     ],
   },
   {
@@ -173,9 +174,9 @@ const platformFeatures = [
     title: "Lease Properties",
     description: "Commercial and long-term lease agreements",
     features: [
-      "Commercial lease templates",
-      "Lease negotiation tools",
-      "Corporate tenant verification",
+      // "Commercial lease templates",
+      // "Lease negotiation tools",
+      // "Corporate tenant verification",
     ],
   },
   {
@@ -183,9 +184,9 @@ const platformFeatures = [
     title: "Property Sales",
     description: "Sell residential and commercial properties",
     features: [
-      "Market analysis tools",
-      "Buyer pre-qualification",
-      "Transaction management",
+      // "Market analysis tools",
+      // "Buyer pre-qualification",
+      // "Transaction management",
     ],
   },
 ];
@@ -228,13 +229,16 @@ export default function OnboardOwnerPage() {
 
       return response.data;
     },
-    onSuccess: (data) => {
-      toast("You have successfully signed up", {
-        description: data.message,
-      });
-      //   setTimeout(() => {
-      //     router.push(`/signin`);
-      //   }, 500);
+    onSuccess: async (data) => {
+      toast(
+        "You have successfully signed up, check your email for verification link",
+        {
+          description: data.message,
+        }
+      );
+
+      await delay(1000);
+      router.push("/signin");
     },
     onError: () => {
       toast.error("There was an error signing up.");
@@ -692,7 +696,7 @@ export default function OnboardOwnerPage() {
                           {[
                             "Apartment",
                             "House",
-                            "Condo",
+                            "Duplex",
                             "Townhouse",
                             "Studio",
                             "Commercial",
@@ -726,12 +730,12 @@ export default function OnboardOwnerPage() {
                         <Label>Where are your properties located? *</Label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                           {[
-                            "Seattle, WA",
-                            "Portland, OR",
-                            "San Francisco, CA",
-                            "Los Angeles, CA",
-                            "Denver, CO",
-                            "Austin, TX",
+                            "Lagos, LG",
+                            "Portharcourt, PH",
+                            "Abuja, ABJ",
+                            "Ibadan, IB",
+                            "Kaduna, KD",
+                            "Kano, KN",
                             "Other",
                           ].map((location) => (
                             <div
