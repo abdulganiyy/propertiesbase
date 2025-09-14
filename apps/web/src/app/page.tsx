@@ -132,24 +132,28 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button size="lg" className="h-12">
-                    <Search className="mr-2 h-4 w-4" />
-                    Find Properties
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="h-12 bg-transparent"
-                  >
-                    <Home className="mr-2 h-4 w-4" />
-                    List Your Property
-                  </Button>
+                  <Link href="/listings">
+                    <Button size="lg" className="h-12">
+                      <Search className="mr-2 h-4 w-4" />
+                      Find Properties
+                    </Button>
+                  </Link>
+                  <Link href="/signup/owner">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="h-12 bg-transparent"
+                    >
+                      <Home className="mr-2 h-4 w-4" />
+                      List Your Property
+                    </Button>
+                  </Link>
                 </div>
                 <div className="flex items-center gap-4 text-sm text-gray-500">
-                  <div className="flex items-center gap-1">
+                  {/* <div className="flex items-center gap-1">
                     <CheckCircle className="h-4 w-4 text-green-500" />
                     <span>10,000+ Properties</span>
-                  </div>
+                  </div> */}
                   <div className="flex items-center gap-1">
                     <CheckCircle className="h-4 w-4 text-green-500" />
                     <span>Verified Owners</span>
@@ -532,7 +536,7 @@ export default function LandingPage() {
                     ))}
                   </div>
                   <p className="text-gray-600 mb-4">
-                    "Saved over $3,000 in agent fees and found the perfect
+                    "Saved over $200 in agent fees and found the perfect
                     apartment. The direct communication with the owner made
                     everything so much easier!"
                   </p>
@@ -564,10 +568,10 @@ export default function LandingPage() {
                   </p>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
-                      M
+                      A
                     </div>
                     <div>
-                      <p className="font-semibold">Mike Chen</p>
+                      <p className="font-semibold">Adams Bako</p>
                       <p className="text-sm text-gray-500">Property Owner</p>
                     </div>
                   </div>
@@ -589,10 +593,10 @@ export default function LandingPage() {
                   </p>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                      A
+                      J
                     </div>
                     <div>
-                      <p className="font-semibold">Anna Rodriguez</p>
+                      <p className="font-semibold">Okunola James</p>
                       <p className="text-sm text-gray-500">Renter</p>
                     </div>
                   </div>
@@ -614,18 +618,22 @@ export default function LandingPage() {
                 money and time with DirectRent.
               </p>
               <div className="flex flex-col gap-2 min-[400px]:flex-row justify-center">
-                <Button size="lg" variant="secondary" className="h-12">
-                  <Search className="mr-2 h-4 w-4" />
-                  Start Searching
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-12 border-white hover:bg-white bg-transparent"
-                >
-                  <Home className="mr-2 h-4 w-4" />
-                  List Your Property
-                </Button>
+                <Link href="/listings">
+                  <Button size="lg" variant="secondary" className="h-12">
+                    <Search className="mr-2 h-4 w-4" />
+                    Start Searching
+                  </Button>
+                </Link>
+                <Link href="/signup/owner">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="h-12 border-white hover:bg-white bg-transparent"
+                  >
+                    <Home className="mr-2 h-4 w-4" />
+                    List Your Property
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

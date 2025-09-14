@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import type { FieldConfig, FormValues } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { delay } from "@/lib/utils";
 
 export const signUpFormFields: FieldConfig[] = [
   {
@@ -64,9 +65,11 @@ export default function SignUp() {
 
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       const { message } = data;
       toast(message);
+      await delay(1000);
+      router.push("/signin");
     },
     onError: () => {
       console.log(error);

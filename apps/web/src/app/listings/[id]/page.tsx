@@ -117,13 +117,13 @@ export default function PropertyDetailPage({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showAllImages, setShowAllImages] = useState(false);
-  const [inquiryForm, setInquiryForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-    moveInDate: "",
-  });
+  // const [inquiryForm, setInquiryForm] = useState({
+  //   name: "",
+  //   email: "",
+  //   phone: "",
+  //   message: "",
+  //   moveInDate: "",
+  // });
 
   const { mutate } = useTrackViewMutation(propertyId as string);
 
@@ -138,7 +138,7 @@ export default function PropertyDetailPage({
     isLoading,
     error,
   } = useProperty(propertyId as string);
-  const submitInquiryMutation = useSubmitInquiry();
+  // const submitInquiryMutation = useSubmitInquiry();
   const toggleFavoriteMutation = useToggleFavorite();
   const priceInfo = getPriceDisplay(property);
 
@@ -163,28 +163,28 @@ export default function PropertyDetailPage({
     }
   };
 
-  const handleInquirySubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!property) return;
+  // const handleInquirySubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (!property) return;
 
-    const inquiryData: InquiryData = {
-      propertyId: property.id,
-      ...inquiryForm,
-    };
+  //   const inquiryData: InquiryData = {
+  //     propertyId: property.id,
+  //     ...inquiryForm,
+  //   };
 
-    submitInquiryMutation.mutate(inquiryData, {
-      onSuccess: (response) => {
-        // Reset form on success
-        setInquiryForm({
-          name: "",
-          email: "",
-          phone: "",
-          message: "",
-          moveInDate: "",
-        });
-      },
-    });
-  };
+  //   submitInquiryMutation.mutate(inquiryData, {
+  //     onSuccess: (response) => {
+  //       // Reset form on success
+  //       setInquiryForm({
+  //         name: "",
+  //         email: "",
+  //         phone: "",
+  //         message: "",
+  //         moveInDate: "",
+  //       });
+  //     },
+  //   });
+  // };
 
   const handleToggleFavorite = () => {
     if (!property) return;
@@ -203,7 +203,15 @@ export default function PropertyDetailPage({
   };
 
   const handleStartChat = async (e: React.MouseEvent) => {
-    if (user.role != "user") return;
+    if (user == null) {
+      router.push("/signin");
+      return;
+    }
+
+    if (user.role != "user") {
+      toast("Please signin as a user to message property owner");
+      return;
+    }
     try {
       // console.log(property.id, user.id);
       const chat = await startChat({
@@ -668,10 +676,10 @@ export default function PropertyDetailPage({
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Message
                   </Button>
-                  <Button variant="outline">
+                  {/* <Button variant="outline">
                     <Phone className="h-4 w-4 mr-2" />
                     Call
-                  </Button>
+                  </Button> */}
                 </div>
               </CardContent>
             </Card>

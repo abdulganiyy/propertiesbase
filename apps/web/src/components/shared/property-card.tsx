@@ -144,8 +144,14 @@ export function PropertyCard({
   };
 
   const handleStartChat = async (e: React.MouseEvent) => {
-    if (!user) return;
-    if (user?.id == property?.owner?.id) return;
+    if (!user) {
+      router.push("/signin");
+      return;
+    }
+    if (user?.id == property?.owner?.id) {
+      toast("Please signin as a user to message property owner");
+      return;
+    }
 
     // only renter or buyer should be able to message property owner
     if (user.role != "user") return;
@@ -529,10 +535,10 @@ export function PropertyCard({
                 "Message Owner"
               )}
             </Button>
-            <Button variant="outline" size="sm">
+            {/* <Button variant="outline" size="sm">
               <Phone className="h-4 w-4 mr-2" />
               Call
-            </Button>
+            </Button> */}
           </div>
         )}
       </CardContent>
