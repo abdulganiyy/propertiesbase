@@ -381,10 +381,10 @@ export function PropertyCard({
               <MessageCircle className="h-4 w-4 mr-2" />
               Message Owner
             </Button>
-            <Button variant="outline">
+            {/* <Button variant="outline">
               <Phone className="h-4 w-4 mr-2" />
               Call
-            </Button>
+            </Button> */}
           </div>
         </CardContent>
       </Card>

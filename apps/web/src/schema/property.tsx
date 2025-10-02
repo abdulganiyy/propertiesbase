@@ -26,55 +26,28 @@ export const propertySchema = yup.object({
   address: yup.string().required("Address is required"),
   city: yup.string().required("City is required"),
   state: yup.string().required("State is required"),
-  //   zipCode: yup
-  //     .string()
-  //     .required("ZIP code is required")
-  //     .matches(/^\d{5}(-\d{4})?$/, "Invalid ZIP code"),
   bedrooms: yup.string().optional(),
   bathrooms: yup.string().optional(),
   sqft: yup
     .number()
     .required("Square footage is required")
     .positive("Must be a positive number"),
-  salePrice: yup.number().when("listingType", {
+  salePrice: yup.string().when("listingType", {
     is: "sale",
-    then: (schema) =>
-      schema
-        .required("Sale price is required")
-        .positive("Must be a positive number"),
+    then: (schema) => schema.required("Sale price is required"),
     otherwise: (schema) => schema.notRequired(),
   }),
 
-  // monthlyRent: yup.number().when("listingType", {
-  //   is: "rent",
-  //   then: (schema) =>
-  //     schema
-  //       .required("Monthly rent is required")
-  //       .positive("Must be a positive number"),
-  //   otherwise: (schema) => schema.notRequired(),
-  // }),
-
-  // yearlyRent: yup.number().when("listingType", {
-  //   is: "rent",
-  //   then: (schema) => schema.positive("Must be a positive number"),
-  //   otherwise: (schema) => schema.notRequired(),
-  // }),
-  monthlyRent: yup.number().when(["listingType", "rentPeriod"], {
+  monthlyRent: yup.string().when(["listingType", "rentPeriod"], {
     is: (listingType: string, rentPeriod: string) =>
       listingType === "rent" && rentPeriod === "monthly",
-    then: (schema) =>
-      schema
-        .positive("Must be a positive number")
-        .required("Monthly rent is required"),
+    then: (schema) => schema.required("Monthly rent is required"),
     otherwise: (schema) => schema.notRequired(),
   }),
-  yearlyRent: yup.number().when(["listingType", "rentPeriod"], {
+  yearlyRent: yup.string().when(["listingType", "rentPeriod"], {
     is: (listingType: string, rentPeriod: string) =>
       listingType === "rent" && rentPeriod === "yearly",
-    then: (schema) =>
-      schema
-        .positive("Must be a positive number")
-        .required("Yearly rent is required"),
+    then: (schema) => schema.required("Yearly rent is required"),
     otherwise: (schema) => schema.notRequired(),
   }),
 
@@ -87,12 +60,9 @@ export const propertySchema = yup.object({
     otherwise: (schema) => schema.notRequired(),
   }),
 
-  leaseAmount: yup.number().when("listingType", {
+  leaseAmount: yup.string().when("listingType", {
     is: "lease",
-    then: (schema) =>
-      schema
-        .required("Lease amount is required")
-        .positive("Must be a positive number"),
+    then: (schema) => schema.required("Lease amount is required"),
     otherwise: (schema) => schema.notRequired(),
   }),
 

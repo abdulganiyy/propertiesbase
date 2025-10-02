@@ -92,11 +92,11 @@ export function PropertyFormDialog({
       bedrooms: property?.bedrooms || "",
       bathrooms: property?.bathrooms || "",
       sqft: property?.sqft || 0,
-      salePrice: property?.salePrice || 0,
-      monthlyRent: property?.monthlyRent || 0,
-      yearlyRent: property?.yearlyRent || 0,
+      salePrice: property?.salePrice,
+      monthlyRent: property?.monthlyRent,
+      yearlyRent: property?.yearlyRent,
       rentPeriod: property?.rentPeriod || "monthly",
-      leaseAmount: property?.leaseAmount || 0,
+      leaseAmount: property?.leaseAmount,
       leaseDuration: property?.leaseDuration || "",
       securityDeposit: property?.securityDeposit || 0,
       availableDate: property?.availableDate || new Date(),
@@ -216,9 +216,24 @@ export function PropertyFormDialog({
     form.setValue("amenities", amenities);
   };
 
-  const handleSubmit = async (data: PropertyFormData) => {
+  const handleSubmit = async (data: PropertyFormData | any) => {
+    const formattedData: any = {};
+
+    for (let key in data) {
+      if (
+        key == "salePrice" ||
+        key == "leaseAmount" ||
+        key == "monthlyRent" ||
+        key == "yearlyRent"
+      ) {
+        formattedData[key] = Number(data[key].replace(/,/g, ""));
+      } else {
+        formattedData[key] = data[key];
+      }
+    }
+
     try {
-      await onSubmit({ id: property?.id, ...data });
+      await onSubmit({ id: property?.id, ...formattedData });
 
       if (isEditing) {
         toast("Property updated successfully");
@@ -292,8 +307,13 @@ export function PropertyFormDialog({
 
   let uploadedImages = form.getValues("images");
 
-  // console.log(uploadedImages);
-  // console.log(form.getValues());
+  // format number with commas
+  const formatWithCommas = (value: string) => {
+    if (!value) return "";
+    const num = value.replace(/,/g, ""); // remove commas
+    if (isNaN(Number(num))) return value;
+    return Number(num).toLocaleString();
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -660,13 +680,20 @@ export function PropertyFormDialog({
                                 ₦
                               </span>{" "}
                               <Input
-                                type="number"
-                                placeholder="450000"
+                                type="text"
+                                placeholder="450,000"
                                 className="pl-10"
                                 {...field}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
+                                onChange={(e) => {
+                                  const rawValue = e.target.value.replace(
+                                    /,/g,
+                                    ""
+                                  );
+                                  // only allow numbers
+                                  if (/^\d*$/.test(rawValue)) {
+                                    field.onChange(formatWithCommas(rawValue));
+                                  }
+                                }}
                               />
                             </div>
                           </FormControl>
@@ -722,13 +749,22 @@ export function PropertyFormDialog({
                                   </span>
                                   {/* <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" /> */}
                                   <Input
-                                    type="number"
+                                    type="text"
                                     placeholder="2400"
                                     className="pl-10"
                                     {...field}
-                                    onChange={(e) =>
-                                      field.onChange(Number(e.target.value))
-                                    }
+                                    onChange={(e) => {
+                                      const rawValue = e.target.value.replace(
+                                        /,/g,
+                                        ""
+                                      );
+                                      // only allow numbers
+                                      if (/^\d*$/.test(rawValue)) {
+                                        field.onChange(
+                                          formatWithCommas(rawValue)
+                                        );
+                                      }
+                                    }}
                                   />
                                 </div>
                               </FormControl>
@@ -751,13 +787,22 @@ export function PropertyFormDialog({
                                     ₦
                                   </span>
                                   <Input
-                                    type="number"
+                                    type="text"
                                     placeholder="28800"
                                     className="pl-10"
                                     {...field}
-                                    onChange={(e) =>
-                                      field.onChange(Number(e.target.value))
-                                    }
+                                    onChange={(e) => {
+                                      const rawValue = e.target.value.replace(
+                                        /,/g,
+                                        ""
+                                      );
+                                      // only allow numbers
+                                      if (/^\d*$/.test(rawValue)) {
+                                        field.onChange(
+                                          formatWithCommas(rawValue)
+                                        );
+                                      }
+                                    }}
                                   />
                                 </div>
                               </FormControl>
@@ -767,7 +812,7 @@ export function PropertyFormDialog({
                         />
                       )}
 
-                      <FormField
+                      {/* <FormField
                         control={form.control}
                         name="securityDeposit"
                         render={({ field }) => (
@@ -792,7 +837,7 @@ export function PropertyFormDialog({
                             <FormMessage />
                           </FormItem>
                         )}
-                      />
+                      /> */}
                     </div>
 
                     {/* <FormField
@@ -851,13 +896,22 @@ export function PropertyFormDialog({
                                   ₦
                                 </span>{" "}
                                 <Input
-                                  type="number"
+                                  type="text"
                                   placeholder="50000"
                                   className="pl-10"
                                   {...field}
-                                  onChange={(e) =>
-                                    field.onChange(Number(e.target.value))
-                                  }
+                                  onChange={(e) => {
+                                    const rawValue = e.target.value.replace(
+                                      /,/g,
+                                      ""
+                                    );
+                                    // only allow numbers
+                                    if (/^\d*$/.test(rawValue)) {
+                                      field.onChange(
+                                        formatWithCommas(rawValue)
+                                      );
+                                    }
+                                  }}
                                 />
                               </div>
                             </FormControl>

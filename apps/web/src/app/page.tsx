@@ -232,7 +232,11 @@ export default function LandingPage() {
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               <Card>
                 <CardHeader>
-                  <DollarSign className="h-10 w-10 text-green-500" />
+                  <img
+                    src="/naira.png"
+                    alt="naira-icon"
+                    className="h-10 w-10"
+                  />
                   <CardTitle>Save on Fees</CardTitle>
                   <CardDescription>
                     No agent commissions or hidden fees. Keep more money in your
@@ -536,7 +540,7 @@ export default function LandingPage() {
                     ))}
                   </div>
                   <p className="text-gray-600 mb-4">
-                    "Saved over $200 in agent fees and found the perfect
+                    "Saved over ₦200,000 in agent fees and found the perfect
                     apartment. The direct communication with the owner made
                     everything so much easier!"
                   </p>
