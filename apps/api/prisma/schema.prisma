@@ -14,6 +14,11 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum SubscriptionTier {
+  FREE
+  STANDARD
+  PREMIUM
+}
 
 model User {
   id           String     @id @default(uuid())
@@ -24,6 +29,9 @@ model User {
   phone        String?
   password     String
   role         Role
+  subscriptionTier       SubscriptionTier  @default(FREE)
+  paystackCustomerCode   String?          @unique
+  subscription           Subscription?
   properties   Property[] @relation("PropertyOwner")
   favorites    Favorite[]
   viewings     Viewing[]
@@ -56,6 +64,19 @@ model User {
   updated_at     DateTime  @updatedAt()
   
   }
+
+model Subscription {
+  id                     String  @id @default(cuid())
+  userId                 String  @unique
+  user                   User    @relation(fields: [userId], references: [id])
+  tier                   SubscriptionTier
+  planCode               String            
+  paystackSubscriptionId String? @unique   
+  status                 String            
+  startedAt              DateTime @default(now())
+  currentPeriodEnd       DateTime?         
+  canceledAt             DateTime?
+}  
 
 model Property {
   id           String          @id @default(uuid())

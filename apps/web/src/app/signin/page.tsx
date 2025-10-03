@@ -101,7 +101,7 @@ export default function Home() {
               variant="outline"
               type="submit"
               disabled={isPending}
-              className="bg-green-600 hover:bg-green-700 text-white"
+              className="bg-black hover:bg-gray-700 hover:text-white text-white"
             >
               {isPending ? "Signing in..." : "Sign in"}
             </Button>

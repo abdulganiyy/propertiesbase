@@ -167,12 +167,12 @@ export function Footer({ variant = "default" }: FooterProps) {
               >
                 How It Works
               </Link>
-              {/* <Link
-                href="/"
+              <Link
+                href="/plans"
                 className="text-gray-300 hover:text-white text-sm"
               >
                 Pricing
-              </Link> */}
+              </Link>
               <Link
                 href="/#about-us"
                 className="text-gray-300 hover:text-white text-sm"

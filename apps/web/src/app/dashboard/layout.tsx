@@ -32,6 +32,7 @@ import {
   Building,
   Plus,
   AlertTriangle,
+  Building2,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -146,6 +147,8 @@ const quickActions: Record<string, Object[]> = {
     { href: "/messages", label: "Messages", icon: MessageSquare },
   ],
   owner: [
+    { href: "/plans", label: "Upgrade Subscription", icon: Building2 },
+
     {
       href: "/dashboard/owner?tab=properties",
       label: "Add Property",

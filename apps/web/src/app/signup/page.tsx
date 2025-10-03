@@ -95,7 +95,7 @@ export default function SignUp() {
             <Button
               type="submit"
               disabled={isPending}
-              className="bg-green-600 hover:bg-green-700 text-white"
+              className="bg-black hover:bg-gray-700  text-white"
             >
               {isPending ? "Signing up..." : "Sign up"}
             </Button>

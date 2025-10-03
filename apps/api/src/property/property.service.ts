@@ -1,22 +1,68 @@
-import { Injectable,NotFoundException,BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class PropertyService {
-      constructor(private prisma:PrismaService) {}
-  
- async create(dto: CreatePropertyDto) {
-    const { images, ...propertyData } = dto
+  constructor(private prisma: PrismaService) {}
 
-    const price = propertyData.salePrice || propertyData.leaseAmount || propertyData.yearlyRent || propertyData.monthlyRent || 0;
+  private async assertQuota(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { subscriptionTier: true },
+    });
+    if (!user) throw new ForbiddenException('User not found');
+
+    if (user.subscriptionTier === 'FREE') {
+      const total = await this.prisma.property.count({
+        where: { ownerId: userId },
+      });
+      if (total >= 2)
+        throw new ForbiddenException(
+          'Free plan allows only 2 properties total.',
+        );
+    } else if (user.subscriptionTier === 'STANDARD') {
+      const start = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        1,
+      );
+      const monthly = await this.prisma.property.count({
+        where: { ownerId: userId, created_at: { gte: start } },
+      });
+      if (monthly >= 10)
+        throw new ForbiddenException(
+          'Standard allows 10 properties per month.',
+        );
+    } else if (user.subscriptionTier === 'PREMIUM') {
+      // premium: 20+ (treat as unlimited)
+      return;
+    }
+  }
+
+  async create(dto: CreatePropertyDto) {
+    await this.assertQuota(dto.ownerId);
+
+    const { images, ...propertyData } = dto;
+
+    const price =
+      propertyData.salePrice ||
+      propertyData.leaseAmount ||
+      propertyData.yearlyRent ||
+      propertyData.monthlyRent ||
+      0;
 
     const property = await this.prisma.property.create({
       data: {
         ...propertyData,
-        bathrooms:Number(propertyData.bathrooms),
-        bedrooms:Number(propertyData.bedrooms),
+        bathrooms: Number(propertyData.bathrooms),
+        bedrooms: Number(propertyData.bedrooms),
         price,
         images: images?.length
           ? {
@@ -30,31 +76,34 @@ export class PropertyService {
       include: {
         images: true, // include images in response
       },
-    })
+    });
 
-    return property
+    return property;
   }
 
-  async findAll(query:Record<string,any>) {
+  async findAll(query: Record<string, any>) {
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'created_at',
+      order = 'asc',
+      ...filters
+    } = query;
 
+    const skip: number = (+page - 1) * +limit;
 
-    const {page = 1, limit = 10, sortBy = "created_at",order="asc",...filters } = query
-
-    const skip : number = (+page - 1) * +limit
-
-
-    const where:any = {status:"AVAILABLE"}
+    const where: any = { status: 'AVAILABLE' };
 
     if (filters.search) {
-      where.address = { contains: filters.search, mode: 'insensitive' }
+      where.address = { contains: filters.search, mode: 'insensitive' };
     }
 
-      if (filters.bedrooms) {
-      where.bedrooms = +filters.bedrooms
+    if (filters.bedrooms) {
+      where.bedrooms = +filters.bedrooms;
     }
 
-      if (filters.amenities) {
-      where.amenities =  { hasSome: filters.amenities.split(",") }
+    if (filters.amenities) {
+      where.amenities = { hasSome: filters.amenities.split(',') };
     }
 
     if (filters.minPrice || filters.maxPrice) {
@@ -66,15 +115,13 @@ export class PropertyService {
       where.listingType = filters.listingType;
     }
 
-     if (filters.propertyType) {
+    if (filters.propertyType) {
       where.propertyType = filters.propertyType;
     }
 
-    
-
-      const [data, total] = await Promise.all([
+    const [data, total] = await Promise.all([
       this.prisma.property.findMany({
-        include:{owner:true,images:true,views:true},
+        include: { owner: true, images: true, views: true },
         where,
         skip,
         take: Number(limit),
@@ -90,35 +137,35 @@ export class PropertyService {
       // limit: Number(limit),
       total,
       totalPages: Math.ceil(total / limit),
-      properties:data,
+      properties: data,
     };
-
-
   }
 
-  async findOwnerProperties(userId:string,query:Record<string,any>) {
+  async findOwnerProperties(userId: string, query: Record<string, any>) {
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'created_at',
+      order = 'desc',
+      ...filters
+    } = query;
 
-    const {page = 1, limit = 10, sortBy = "created_at",order="desc",...filters } = query
+    const skip: number = (page - 1) * limit;
 
-    const skip : number = (page - 1) * limit;
-
-
-    const where:any = {
-        ownerId:userId
-   
-      
-    }
+    const where: any = {
+      ownerId: userId,
+    };
 
     if (filters.search) {
       where.address = { contains: filters.search, mode: 'insensitive' };
     }
 
-      if (filters.bedrooms) {
-      where.bedrooms = +filters.bedrooms
+    if (filters.bedrooms) {
+      where.bedrooms = +filters.bedrooms;
     }
 
-      if (filters.amenities) {
-      where.amenities =  { hasSome: filters.amenities.split(",") }
+    if (filters.amenities) {
+      where.amenities = { hasSome: filters.amenities.split(',') };
     }
 
     if (filters.minPrice || filters.maxPrice) {
@@ -130,15 +177,13 @@ export class PropertyService {
       where.listingType = filters.listingType;
     }
 
-     if (filters.propertyType) {
+    if (filters.propertyType) {
       where.propertyType = filters.propertyType;
     }
 
-    
-
-      const [data, total] = await Promise.all([
+    const [data, total] = await Promise.all([
       this.prisma.property.findMany({
-        include:{owner:true,images:true,views:true},
+        include: { owner: true, images: true, views: true },
         where,
         skip,
         take: Number(limit),
@@ -154,32 +199,33 @@ export class PropertyService {
       // limit: Number(limit),
       total,
       totalPages: Math.ceil(total / limit),
-      properties:data,
+      properties: data,
     };
-
-
   }
 
-  async findAllProperties(query:Record<string,any>) {
+  async findAllProperties(query: Record<string, any>) {
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'created_at',
+      order = 'asc',
+      ...filters
+    } = query;
 
+    const skip: number = (+page - 1) * +limit;
 
-    const {page = 1, limit = 10, sortBy = "created_at",order="asc",...filters } = query
-
-    const skip : number = (+page - 1) * +limit
-
-
-    const where:any = {}
+    const where: any = {};
 
     if (filters.search) {
-      where.address = { contains: filters.search, mode: 'insensitive' }
+      where.address = { contains: filters.search, mode: 'insensitive' };
     }
 
-      if (filters.bedrooms) {
-      where.bedrooms = +filters.bedrooms
+    if (filters.bedrooms) {
+      where.bedrooms = +filters.bedrooms;
     }
 
-      if (filters.amenities) {
-      where.amenities =  { hasSome: filters.amenities.split(",") }
+    if (filters.amenities) {
+      where.amenities = { hasSome: filters.amenities.split(',') };
     }
 
     if (filters.minPrice || filters.maxPrice) {
@@ -191,15 +237,13 @@ export class PropertyService {
       where.listingType = filters.listingType;
     }
 
-     if (filters.propertyType) {
+    if (filters.propertyType) {
       where.propertyType = filters.propertyType;
     }
 
-    
-
-      const [data, total] = await Promise.all([
+    const [data, total] = await Promise.all([
       this.prisma.property.findMany({
-        include:{owner:true,images:true,views:true},
+        include: { owner: true, images: true, views: true },
         where,
         skip,
         take: Number(limit),
@@ -215,23 +259,27 @@ export class PropertyService {
       // limit: Number(limit),
       total,
       totalPages: Math.ceil(total / limit),
-      properties:data,
+      properties: data,
     };
-
-
   }
-
 
   findOne(id: string) {
     return this.prisma.property.findFirst({
-      where:{id},
-      include:{owner:true,images:true,ratings:true,reviews:{include:{
-        user:true
-      }}}})
-    
+      where: { id },
+      include: {
+        owner: true,
+        images: true,
+        ratings: true,
+        reviews: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
   }
 
-    async toggleFavorite(userId: string, propertyId: string) {
+  async toggleFavorite(userId: string, propertyId: string) {
     const existing = await this.prisma.favorite.findUnique({
       where: {
         userId_propertyId: { userId, propertyId },
@@ -260,20 +308,25 @@ export class PropertyService {
     });
   }
 
-    async getUserFavorites(userId: string) {
+  async getUserFavorites(userId: string) {
     return this.prisma.favorite.findMany({
       where: { userId, isDeleted: false },
       include: {
-      property: {
-        include: {
-          images: true, // 👈 include property images
+        property: {
+          include: {
+            images: true, // 👈 include property images
+          },
         },
       },
-    },
     });
   }
 
-    async scheduleViewing(userId: string, propertyId: string, scheduledAt: Date, notes?: string) {
+  async scheduleViewing(
+    userId: string,
+    propertyId: string,
+    scheduledAt: Date,
+    notes?: string,
+  ) {
     // Check if property exists
     const property = await this.prisma.property.findUnique({
       where: { id: propertyId },
@@ -295,48 +348,55 @@ export class PropertyService {
     });
   }
 
-
-   getUserViewings(userId: string) {
+  getUserViewings(userId: string) {
     return this.prisma.viewing.findMany({
       where: { userId },
-      include: { property: {
-        select:{
-          title:true,
-          address:true,
-          owner:true
-        }
-      },user:true},
+      include: {
+        property: {
+          select: {
+            title: true,
+            address: true,
+            owner: true,
+          },
+        },
+        user: true,
+      },
       orderBy: { scheduledAt: 'desc' },
-    })
+    });
   }
 
-     getOwnerViewings(userId: string) {
+  getOwnerViewings(userId: string) {
     return this.prisma.viewing.findMany({
-      where: { property:{
-        ownerId:userId
-      } },
-      include: { property: {
-        select:{
-          title:true,
-          address:true,
-          owner:true
-        }
-      },user:true},
+      where: {
+        property: {
+          ownerId: userId,
+        },
+      },
+      include: {
+        property: {
+          select: {
+            title: true,
+            address: true,
+            owner: true,
+          },
+        },
+        user: true,
+      },
       orderBy: { scheduledAt: 'desc' },
-    })
+    });
   }
 
   async getPropertyViewings(propertyId: string) {
     return this.prisma.viewing.findMany({
       where: { propertyId },
-      include: { user: true , property:true},
+      include: { user: true, property: true },
       orderBy: { scheduledAt: 'asc' },
     });
   }
 
-   async trackView(propertyId: string, userId?: string, ipAddress?: string) {
+  async trackView(propertyId: string, userId?: string, ipAddress?: string) {
     if (!userId && !ipAddress) {
-      throw new Error("Either userId or ipAddress must be provided")
+      throw new Error('Either userId or ipAddress must be provided');
     }
 
     try {
@@ -346,44 +406,51 @@ export class PropertyService {
           userId: userId ?? null,
           ipAddress: userId ? null : ipAddress,
         },
-      })
+      });
     } catch (err) {
       // If unique constraint error, it means this view already exists → ignore
-      if (err.code === "P2002") {
-        return null
+      if (err.code === 'P2002') {
+        return null;
       }
-      throw err
+      throw err;
     }
   }
 
-    async getAllPropertiesViews() {
-    return this.prisma.uniquePropertyView.count()
+  async getAllPropertiesViews() {
+    return this.prisma.uniquePropertyView.count();
   }
 
   async getPropertyViews(propertyId: string) {
     return this.prisma.uniquePropertyView.count({
       where: { propertyId },
-    })
+    });
   }
 
   async getUserViewedProperties(userId: string) {
     return this.prisma.uniquePropertyView.findMany({
       where: { userId },
       include: { property: true },
-    })
+    });
   }
 
-   async getOwnerViewedProperties(userId: string) {
+  async getOwnerViewedProperties(userId: string) {
     return this.prisma.uniquePropertyView.findMany({
-      where: { property:{
-        ownerId:userId
-      } },
+      where: {
+        property: {
+          ownerId: userId,
+        },
+      },
       include: { property: true },
-    })
+    });
   }
 
-  async updateStatus(viewingId: string, status: 'PENDING' | 'CONFIRMED' | 'CANCELLED') {
-    const viewing = await this.prisma.viewing.findUnique({ where: { id: viewingId } });
+  async updateStatus(
+    viewingId: string,
+    status: 'PENDING' | 'CONFIRMED' | 'CANCELLED',
+  ) {
+    const viewing = await this.prisma.viewing.findUnique({
+      where: { id: viewingId },
+    });
     if (!viewing) throw new NotFoundException('Viewing not found');
 
     return this.prisma.viewing.update({
@@ -392,19 +459,22 @@ export class PropertyService {
     });
   }
 
-
-
   async update(id: string, updatePropertyDto: UpdatePropertyDto) {
-       const { images, ...propertyData } = updatePropertyDto
+    const { images, ...propertyData } = updatePropertyDto;
 
-    const price = propertyData.salePrice || propertyData.leaseAmount || propertyData.yearlyRent || propertyData.monthlyRent || 0;
+    const price =
+      propertyData.salePrice ||
+      propertyData.leaseAmount ||
+      propertyData.yearlyRent ||
+      propertyData.monthlyRent ||
+      0;
 
     const property = await this.prisma.property.update({
-     where:{id},
-        data: {
+      where: { id },
+      data: {
         ...propertyData,
-        bathrooms:Number(propertyData.bathrooms),
-        bedrooms:Number(propertyData.bedrooms),
+        bathrooms: Number(propertyData.bathrooms),
+        bedrooms: Number(propertyData.bedrooms),
         price,
         images: images?.length
           ? {
@@ -418,19 +488,18 @@ export class PropertyService {
       include: {
         images: true, // include images in response
       },
-    })
+    });
 
-    return property
+    return property;
   }
 
   async remove(id: string) {
-
-     // Check if property exists
+    // Check if property exists
     const property = await this.prisma.property.findUnique({
       where: { id },
-      include:{
-        chats:true
-      }
+      include: {
+        chats: true,
+      },
     });
 
     if (!property) {
@@ -440,23 +509,23 @@ export class PropertyService {
     // If your schema does not have ON DELETE CASCADE, delete manually:
     await this.prisma.$transaction([
       this.prisma.propertyImage.deleteMany({
-        where: { propertyId:id },
+        where: { propertyId: id },
       }),
       this.prisma.favorite.deleteMany({
-        where: { propertyId:id },
+        where: { propertyId: id },
       }),
       this.prisma.viewing.deleteMany({
-        where: { propertyId:id },
+        where: { propertyId: id },
       }),
-         this.prisma.uniquePropertyView.deleteMany({
-        where: { propertyId:id },
+      this.prisma.uniquePropertyView.deleteMany({
+        where: { propertyId: id },
       }),
-      
-        this.prisma.message.deleteMany({
-        where: {chat:{ propertyId:id} },
+
+      this.prisma.message.deleteMany({
+        where: { chat: { propertyId: id } },
       }),
-        this.prisma.chat.deleteMany({
-        where: { propertyId:id },
+      this.prisma.chat.deleteMany({
+        where: { propertyId: id },
       }),
       this.prisma.property.delete({
         where: { id },
