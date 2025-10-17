@@ -527,6 +527,9 @@ export class PropertyService {
       this.prisma.chat.deleteMany({
         where: { propertyId: id },
       }),
+      this.prisma.rating.deleteMany({
+        where: { propertyId: id },
+      }),
       this.prisma.property.delete({
         where: { id },
       }),
