@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Property" ADD COLUMN     "dailylyRent" DOUBLE PRECISION NOT NULL DEFAULT 0;

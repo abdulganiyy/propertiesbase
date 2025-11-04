@@ -75,6 +75,13 @@ const getPriceDisplay = (property: Property | any) => {
           subtitle: "Annual Rent",
         };
       }
+      if (property.rentPeriod === "daily" && property.dailyRent) {
+        return {
+          price: `${property.currency || "₦"}${property.dailyRent.toLocaleString()}`,
+          period: "/day",
+          subtitle: "",
+        };
+      }
       return {
         price: `${property.currency || "₦"}${property.monthlyRent?.toLocaleString() || property.price.toLocaleString()}`,
         period: "/month",

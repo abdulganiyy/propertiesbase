@@ -41,7 +41,7 @@ export class PropertyService {
           'Standard allows 10 properties per month.',
         );
     } else if (user.subscriptionTier === 'PREMIUM') {
-      // premium: 20+ (treat as unlimited)
+      // premium: 20+ (treat as unlimited).
       return;
     }
   }
@@ -56,6 +56,7 @@ export class PropertyService {
       propertyData.leaseAmount ||
       propertyData.yearlyRent ||
       propertyData.monthlyRent ||
+      propertyData.dailyRent ||
       0;
 
     const property = await this.prisma.property.create({

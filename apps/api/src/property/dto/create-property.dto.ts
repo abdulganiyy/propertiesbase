@@ -7,121 +7,125 @@ import {
   IsEnum,
   ValidateNested,
   IsUrl,
-} from 'class-validator'
-import { Type } from 'class-transformer'
-import { PropertyStatus } from '@prisma/client'
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { PropertyStatus } from '@prisma/client';
 
 class CreateImageDto {
   @IsString()
   @IsUrl()
-  imageUrl: string
+  imageUrl: string;
 
   @IsOptional()
   @IsBoolean()
-  isCover?: boolean
+  isCover?: boolean;
 }
 
 export class CreatePropertyDto {
   @IsString()
-  ownerId: string
+  ownerId: string;
 
   @IsString()
-  title: string
+  title: string;
 
   @IsOptional()
   @IsString()
-  description?: string
+  description?: string;
 
   @IsOptional()
   @IsNumber()
-  price?: number
+  price?: number;
 
   @IsOptional()
   @IsString()
-  currency?: string
+  currency?: string;
 
   @IsOptional()
   @IsBoolean()
-  trending?: boolean
+  trending?: boolean;
 
   @IsOptional()
   @IsBoolean()
-  featured?: boolean
+  featured?: boolean;
 
   @IsEnum(PropertyStatus)
-  status: PropertyStatus
+  status: PropertyStatus;
 
   @IsOptional()
   @IsString()
-  propertyType?: string
+  propertyType?: string;
 
   @IsString()
-  listingType: string
+  listingType: string;
 
   @IsOptional()
   @IsNumber()
-  bedrooms?: number
+  bedrooms?: number;
 
   @IsOptional()
   @IsNumber()
-  bathrooms?: number
+  bathrooms?: number;
 
   @IsOptional()
   @IsNumber()
-  areaSqft?: number
-
-  @IsOptional()
-  @IsString()
-  city?: string
+  areaSqft?: number;
 
   @IsOptional()
   @IsString()
-  state?: string
+  city?: string;
 
   @IsOptional()
   @IsString()
-  country?: string
+  state?: string;
 
   @IsOptional()
   @IsString()
-  address?: string
-
-  @IsOptional()
-  @IsNumber()
-  salePrice?: number
-
-  @IsOptional()
-  @IsNumber()
-  monthlyRent?: number
-
-  @IsOptional()
-  @IsNumber()
-  yearlyRent?: number
+  country?: string;
 
   @IsOptional()
   @IsString()
-  rentPeriod?: string
+  address?: string;
 
   @IsOptional()
   @IsNumber()
-  leaseAmount?: number
+  salePrice?: number;
+
+  @IsOptional()
+  @IsNumber()
+  dailyRent?: number;
+
+  @IsOptional()
+  @IsNumber()
+  monthlyRent?: number;
+
+  @IsOptional()
+  @IsNumber()
+  yearlyRent?: number;
 
   @IsOptional()
   @IsString()
-  leaseDuration?: string
+  rentPeriod?: string;
 
   @IsOptional()
   @IsNumber()
-  securityDeposit?: number
+  leaseAmount?: number;
+
+  @IsOptional()
+  @IsString()
+  leaseDuration?: string;
+
+  @IsOptional()
+  @IsNumber()
+  securityDeposit?: number;
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  amenities?: string[]
+  amenities?: string[];
 
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateImageDto)
-  images?: CreateImageDto[]
+  images?: CreateImageDto[];
 }
