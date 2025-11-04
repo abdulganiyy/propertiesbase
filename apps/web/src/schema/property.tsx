@@ -37,6 +37,12 @@ export const propertySchema = yup.object({
     then: (schema) => schema.required("Sale price is required"),
     otherwise: (schema) => schema.notRequired(),
   }),
+  dailyRent: yup.string().when(["listingType", "rentPeriod"], {
+    is: (listingType: string, rentPeriod: string) =>
+      listingType === "rent" && rentPeriod === "daily",
+    then: (schema) => schema.required("Daily rent is required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
 
   monthlyRent: yup.string().when(["listingType", "rentPeriod"], {
     is: (listingType: string, rentPeriod: string) =>
@@ -56,7 +62,7 @@ export const propertySchema = yup.object({
     then: (schema) =>
       schema
         .required("Rent period is required")
-        .oneOf(["monthly", "yearly"], "Invalid rent period"),
+        .oneOf(["daily", "monthly", "yearly"], "Invalid rent period"),
     otherwise: (schema) => schema.notRequired(),
   }),
 

@@ -1,8 +1,8 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function delay(ms: number): Promise<void> {
@@ -11,23 +11,23 @@ export function delay(ms: number): Promise<void> {
 
 // utils/date.ts
 export function formatDateTime(dateString: string) {
-  const date = new Date(dateString)
+  const date = new Date(dateString);
 
   const optionsDate: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "numeric",
-  }
+  };
 
   const optionsTime: Intl.DateTimeFormatOptions = {
     hour: "2-digit",
     minute: "2-digit",
-  }
+  };
 
   return {
     date: date.toLocaleDateString(undefined, optionsDate), // e.g. "August 18, 2025"
     time: date.toLocaleTimeString(undefined, optionsTime), // e.g. "03:45 PM"
-  }
+  };
 }
 
 export function timeAgo(dateInput?: string | Date | null) {
@@ -60,6 +60,13 @@ export const getPriceDisplay = (property: any) => {
           price: `${property?.currency || "₦"}${property?.yearlyRent?.toLocaleString()}`,
           period: "/year",
           subtitle: "Annual Rent",
+        };
+      }
+      if (property.rentPeriod === "daily" && property.dailyRent) {
+        return {
+          price: `${property.currency || "₦"}${property.dailyRent.toLocaleString()}`,
+          period: "/day",
+          subtitle: "",
         };
       }
       return {
@@ -95,4 +102,3 @@ export const getPriceDisplay = (property: any) => {
 //   if (diff < 86400) return rtf?.format(-Math.floor(diff / 3600), "hour");
 //   return rtf?.format(-Math.floor(diff / 86400), "day");
 // }
-

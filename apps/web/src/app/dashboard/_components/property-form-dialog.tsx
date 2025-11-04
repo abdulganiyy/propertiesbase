@@ -93,6 +93,7 @@ export function PropertyFormDialog({
       bathrooms: property?.bathrooms || "",
       sqft: property?.sqft || 0,
       salePrice: property?.salePrice,
+      dailyRent: property?.dailyRent,
       monthlyRent: property?.monthlyRent,
       yearlyRent: property?.yearlyRent,
       rentPeriod: property?.rentPeriod || "monthly",
@@ -224,7 +225,8 @@ export function PropertyFormDialog({
         key == "salePrice" ||
         key == "leaseAmount" ||
         key == "monthlyRent" ||
-        key == "yearlyRent"
+        key == "yearlyRent" ||
+        key == "dailyRent"
       ) {
         formattedData[key] = Number(data[key].replace(/,/g, ""));
       } else {
@@ -291,6 +293,9 @@ export function PropertyFormDialog({
             "securityDeposit"
             // "leaseTerm"
           );
+          if (watchRentPeriod === "daily") {
+            baseFields.push("dailyRent");
+          }
           if (watchRentPeriod === "yearly") {
             baseFields.push("yearlyRent");
           }
@@ -725,6 +730,7 @@ export function PropertyFormDialog({
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
+                              <SelectItem value="daily">Daily</SelectItem>
                               <SelectItem value="monthly">Monthly</SelectItem>
                               <SelectItem value="yearly">Yearly</SelectItem>
                             </SelectContent>
@@ -735,6 +741,44 @@ export function PropertyFormDialog({
                     />
 
                     <div className="grid grid-cols-2 gap-4">
+                      {watchRentPeriod === "daily" && (
+                        <FormField
+                          control={form.control}
+                          name="dailyRent"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Daily Rent *</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-3.5 transform -translate-y-1/2 h-4 w-4 text-gray-400">
+                                    ₦
+                                  </span>
+                                  {/* <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" /> */}
+                                  <Input
+                                    type="text"
+                                    placeholder="2400"
+                                    className="pl-10"
+                                    {...field}
+                                    onChange={(e) => {
+                                      const rawValue = e.target.value.replace(
+                                        /,/g,
+                                        ""
+                                      );
+                                      // only allow numbers
+                                      if (/^\d*$/.test(rawValue)) {
+                                        field.onChange(
+                                          formatWithCommas(rawValue)
+                                        );
+                                      }
+                                    }}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
                       {watchRentPeriod === "monthly" && (
                         <FormField
                           control={form.control}
